@@ -1,7 +1,10 @@
+import { ApiResponse } from "../common/ApiResponse";
+
 const BASE_URL = process.env.BASE_URL || "http://localhost:3001";
 
-export const getMessage = async (): Promise<any> => {
+export const getMessage = async (): Promise<string> => {
   const response = await fetch(`${BASE_URL}/`);
-  if (!response.ok) throw new Error();
-  return response.json();
+  const json: ApiResponse = (await response.json()) as ApiResponse;
+  if (!response.ok) throw new Error(json.meta.error);
+  return json.data;
 };

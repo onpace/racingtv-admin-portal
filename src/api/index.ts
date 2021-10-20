@@ -1,9 +1,11 @@
+import { ApiResponse, respond } from "../common/ApiResponse";
 const express = require("express");
 
 export const startup = (port: number = 3001) => {
   const app = express();
-  app.get("/", (req: any, res: any) => {
-    res.send({ message: "hello world" });
+
+  app.get("/", (req: any, res: any): ApiResponse => {
+    return respond(res, "hello world");
   });
 
   app.listen(port, "0.0.0.0", () => {

@@ -7,9 +7,9 @@ function App() {
 
   useEffect(() => {
     getMessage()
-      .then((msg) => setMsg(msg.message))
+      .then(setMsg)
       .catch((err) => setMsg(err.message || "Error"));
-  });
+  }, []);
 
   return (
     <div className="App">
