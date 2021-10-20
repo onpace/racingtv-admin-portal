@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@aws-sdk/client-ecs": "^3.36.0",
+    "@aws-sdk/client-ecs": "^3.37.0",
+    "@aws-sdk/credential-provider-ini": "^3.37.0",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
