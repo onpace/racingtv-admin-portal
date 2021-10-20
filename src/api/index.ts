@@ -1,11 +1,23 @@
-import { ApiResponse, respond } from "../common/ApiResponse";
+import { respond } from "../common/ApiResponse";
+import { routes } from "./routes";
+
 const express = require("express");
 
 export const startup = (port: number = 3001) => {
   const app = express();
 
-  app.get("/", (req: any, res: any): ApiResponse => {
-    return respond(res, "hello world");
+  app.use((req: any, res: any, next: () => void) => {
+    res.set(`Access-Control-Allow-Origin`, (process.env.CORS_URL || "*").replace(/ /g, ""));
+    res.set(`Access-Control-Allow-Methods`, process.env.CORS_METHODS || "GET,PUT,POST,DELETE");
+    res.set(`Access-Control-Allow-Headers`, process.env.CORS_HEADERS || "Content-Type");
+    next();
+  });
+
+  routes(app);
+
+  // 404 catch all
+  app.use((req: any, res: any, next: () => void) => {
+    respond(res, {}, 404, "Not Found");
   });
 
   app.listen(port, "0.0.0.0", () => {
