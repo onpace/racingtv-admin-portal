@@ -1,13 +1,21 @@
-import React from "react";
-import logo from "./logo.svg";
+import React, { useEffect, useState } from "react";
 import "./App.css";
+import { getMessage } from "./Client";
 
 function App() {
+  const [msg, setMsg] = useState("Loading");
+
+  useEffect(() => {
+    getMessage()
+      .then((msg) => setMsg(msg.message))
+      .catch((err) => setMsg(err.message || "Error"));
+  });
+
   return (
     <div className="App">
       <header className="App-header">
         <p>
-          Edit <code>src/App.tsx</code> and save to reload.
+          <code>{msg}</code>
         </p>
       </header>
     </div>
