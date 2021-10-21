@@ -15,8 +15,8 @@ export class CodedError extends Error {
 
 export const authenticate = (username: string, password: string): string => {
   const credentials = {
-    login: process.env.ADMIN_USER || "wooadmin",
-    password: process.env.ADMIN_PASSWORD || "w00p@sswd"
+    login: process.env.ADMIN_USER || "rtvadmin",
+    password: process.env.ADMIN_PASSWORD || "G4xY6bkUPVgQMB79"
   };
   if (username !== credentials.login || password !== credentials.password)
     throw new CodedError("Unauthorized", 401);

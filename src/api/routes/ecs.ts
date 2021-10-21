@@ -14,7 +14,7 @@ const express = require("express");
 const router = express.Router();
 
 let client: ECSClient;
-const cluster = process.env.ECS_CLUSTER || "rtv-prod";
+const cluster = process.env.ECS_CLUSTER || "rtv-staging";
 
 const getEcsClient = (): ECSClient => {
   if (!client) {
