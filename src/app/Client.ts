@@ -1,7 +1,7 @@
 import { ApiResponse } from "../common/ApiResponse";
 import { logout } from "./App";
 
-const BASE_URL = process.env.BASE_URL || "http://localhost:3001/api";
+const BASE_URL = process.env.REACT_APP_BASE_URL || "http://localhost:3001/api";
 
 export const getMessage = async (): Promise<string> => {
   const response = await fetch(`${BASE_URL}/`);
