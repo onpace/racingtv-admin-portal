@@ -1,4 +1,5 @@
 import { ApiResponse } from "../common/ApiResponse";
+import { logout } from "./App";
 
 const BASE_URL = process.env.BASE_URL || "http://localhost:3001";
 
@@ -54,18 +55,41 @@ export type Service = {
   taskDefinition: string;
 };
 
+const headers = (): any => {
+  const t = localStorage.getItem("token");
+  const h: any = { "Content-Type": "application/json" };
+  if (t) h["Authorization"] = `Basic ${t}`;
+  return h;
+};
+
 export const getServices = async (): Promise<Service[]> => {
-  const response = await fetch(`${BASE_URL}/ecs/`);
+  const response = await fetch(`${BASE_URL}/ecs/`, { headers: headers() });
   const json: ApiResponse = (await response.json()) as ApiResponse;
+  if (response.status === 401) logout && logout();
   if (!response.ok) throw new Error(json.meta.error);
-  const services = json.data as Service[];
+  const services = (json.data as Service[]).filter((s) => s.serviceName.indexOf("daemon") >= 0);
   services.sort((a, b) => (a.serviceName > b.serviceName ? -1 : 1));
+
   return services;
 };
 
 export const rebootService = async (name: string): Promise<boolean> => {
-  const response = await fetch(`${BASE_URL}/ecs/reboot?service=${name}`);
+  const response = await fetch(`${BASE_URL}/ecs/reboot?service=${name}`, { headers: headers() });
   const json: ApiResponse = (await response.json()) as ApiResponse;
+  if (response.status === 401) logout && logout();
   if (!response.ok) throw new Error(json.meta.error);
   return response.ok;
+};
+
+export const postLogin = async (username: string, password: string): Promise<string> => {
+  const response = await fetch(`${BASE_URL}/login`, {
+    method: "POST", // *GET, POST, PUT, DELETE, etc.
+    mode: "cors", // no-cors, *cors, same-origin
+    cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+    headers: headers(),
+    body: JSON.stringify({ username, password }) // body data type must match "Content-Type" header
+  });
+  const json: ApiResponse = (await response.json()) as ApiResponse;
+  if (!response.ok) throw new Error(json.meta.error);
+  return json.data.token;
 };

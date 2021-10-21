@@ -2,6 +2,12 @@
   padding: 2rem;
 }
 
+.App.login {
+  display: flex;
+  flex-direction: column;
+  max-width: 30%;
+}
+
 .App .service {
   display: flex;
   flex-direction: row;
@@ -21,18 +27,37 @@
   font-weight: bold;
 }
 
-.App .service > p > .reboot {
-  background-color: red;
-  color: white;
+.App .button {
   padding: .5rem;
   text-align: center;
   border-radius: 10px;
   cursor: pointer;
   width: 5rem;
   height: 100%;
+  background-color: #ccc;
 }
 
-.App .service > p > .reboot.disabled {
+.App .button.disabled {
   cursor: initial;
   background-color: #aaa;
+}
+
+.App .button.reboot {
+  background-color: red;
+  color: white;
+}
+.App .service > p > .button.reboot {
+  height: 100%;
+}
+
+.App .service > p.count.good {
+  color: green;
+}
+
+.App .service > p.count.warning {
+  color: orange;
+}
+
+.App .service > p.count.alert {
+  color: orangered;
 }

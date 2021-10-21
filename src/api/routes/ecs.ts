@@ -8,22 +8,13 @@ import {
   StopTaskCommand
 } from "@aws-sdk/client-ecs";
 import { fromIni } from "@aws-sdk/credential-provider-ini";
+import { authenticate, CodedError } from "../routes";
 
 const express = require("express");
 const router = express.Router();
 
 let client: ECSClient;
-const cluster = "rtv-staging";
-
-class CodedError extends Error {
-  code: number = 500;
-}
-
-const error = (message: string = "Unknown error", code: number = 500) => {
-  const e = new CodedError(message);
-  e.code = code;
-  throw e;
-};
+const cluster = process.env.ECS_CLUSTER || "rtv-prod";
 
 const getEcsClient = (): ECSClient => {
   if (!client) {
@@ -33,6 +24,25 @@ const getEcsClient = (): ECSClient => {
   }
   return client;
 };
+
+router.use((req: any, res: any, next: () => void) => {
+  try {
+    // parse login and password from headers
+    const b64auth = (req.headers.authorization || "").split(" ")[1] || "";
+    const [login, password] = Buffer.from(b64auth, "base64").toString().split(":");
+
+    // Verify login and password are set and correct
+    if (authenticate(login, password)) {
+      // Access granted...
+      return next();
+    }
+  } catch (err) {
+    // Access denied...
+    res.set("WWW-Authenticate", 'Basic realm="401"');
+    // res.status(401).send("Authentication required.");
+    respond(res, {}, 401, "Unauthorized");
+  }
+});
 
 router.get("/", async (req: any, res: any): Promise<ApiResponse> => {
   try {
@@ -48,13 +58,13 @@ router.get("/", async (req: any, res: any): Promise<ApiResponse> => {
 
     return respond(res, data2.services);
   } catch (err: any) {
-    return respond(res, {}, 500, err.message);
+    return respond(res, {}, err.code || 500, err.message);
   }
 });
 
 router.get("/reboot", async (req: any, res: any): Promise<ApiResponse> => {
   try {
-    if (!req.query.service) error("Service missing");
+    if (!req.query.service) throw new CodedError("Service missing", 400);
     const client = getEcsClient();
     const command1 = new ListTasksCommand({ cluster, serviceName: req.query.service });
     const data1 = await client.send(command1);
