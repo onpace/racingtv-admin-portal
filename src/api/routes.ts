@@ -2,6 +2,8 @@ import { ApiResponse, respond } from "../common/ApiResponse";
 
 import ecs from "./routes/ecs";
 
+const express = require("express");
+const router = express.Router();
 export class CodedError extends Error {
   code: number = 500;
 
@@ -22,25 +24,25 @@ export const authenticate = (username: string, password: string): string => {
   return Buffer.from(`${username}:${password}`).toString("base64");
 };
 
-export const routes = (app: any) => {
-  app.get("/", (req: any, res: any): ApiResponse => {
-    return respond(res, "I'm alive !");
-  });
+router.get("/", (req: any, res: any): ApiResponse => {
+  return respond(res, "I'm alive !");
+});
 
-  app.post("/login", (req: any, res: any): ApiResponse => {
-    try {
-      let { username, password } = req.body;
-      if (!username || !password) {
-        username = "";
-        password = "";
-      }
-      const token = authenticate(username, password);
-      return respond(res, { token });
-    } catch (err: any) {
-      console.log(err);
-      return respond(res, {}, err.code || 500, err.message);
+router.post("/login", (req: any, res: any): ApiResponse => {
+  try {
+    let { username, password } = req.body;
+    if (!username || !password) {
+      username = "";
+      password = "";
     }
-  });
+    const token = authenticate(username, password);
+    return respond(res, { token });
+  } catch (err: any) {
+    console.log(err);
+    return respond(res, {}, err.code || 500, err.message);
+  }
+});
 
-  app.use("/ecs", ecs);
-};
+router.use("/ecs", ecs);
+
+export default router;
