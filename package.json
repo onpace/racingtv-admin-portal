@@ -27,7 +27,7 @@
     "start:api": "cd src/api/ && ts-node-dev --respawn . && wait-on tcp:5000",
     "start:app": "react-scripts start",
     "start": "run-p --race start:api start:app",
-    "build:app": "react-scripts build",
+    "build:app": "REACT_APP_BASE_URL=/api react-scripts build",
     "build:api": "npx tsc src/api/index.ts --outDir build_api",
     "build": "run-p build:app build:api",
     "test": "react-scripts test",
