@@ -51,7 +51,7 @@ router.get("/", async (req: any, res: any): Promise<ApiResponse> => {
     const command1 = new ListServicesCommand({ cluster });
     const data = await client.send(command1);
 
-    const services = data?.serviceArns?.map((s) => s.split("/")[1]);
+    const services = data?.serviceArns?.map((s) => s.split("/").slice(-1)[0]);
 
     const command2 = new DescribeServicesCommand({ cluster, services });
     const data2 = await client.send(command2);
